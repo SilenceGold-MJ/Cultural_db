@@ -1,9 +1,10 @@
 #!/user/bin/env python3
 # -*- coding: utf-8 -*-
 import pymysql,re
-
 from framework.logger import Logger
 logger = Logger(logger="Query_DB").getlog()
+
+
 
 import configparser,os
 proDir = os.getcwd()

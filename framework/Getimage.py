@@ -1,4 +1,7 @@
 import os,imghdr,shutil
+from framework.Query_DB import Query_DB
+from framework.logger import Logger
+logger = Logger(logger="Getimage").getlog()
 
 
 def Getimage(rootdir):#所有文件列表
@@ -36,3 +39,19 @@ def Failimgae(wide,code):
     else:
         os.makedirs(newpath)
         shutil.copyfile(wide, os.path.join(newpath,wide.split("\\")[-1]))
+
+def get_failimage(test_version, test_batch):
+
+    table_name='test_record_sheet'
+    sql="select * from  %s WHERE test_version='%s' AND test_batch='%s' and Result='FAIL';" % (table_name, test_version, test_batch)
+    list=Query_DB().query_db_all(sql )
+    n=1
+    for i in list:
+        Image_Path=i['Image_Path'].replace( '/','\\')
+        #print(Image_Path)
+        code =Image_Path.split("\\")[-2]
+        Failimgae(Image_Path,code)
+        logger.info('%s/%s,复制《%s》……'%(n,len(list),Image_Path.split('\\')[-1]))
+        n+=1
+
+
