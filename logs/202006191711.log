@@ -1,0 +1,2 @@
+2020-06-19 17:11:09,368 - Query_DB - ERROR - execute() missing 1 required positional argument: 'query'
+2020-06-19 17:11:41,639 - Query_DB - ERROR - mogrify() missing 1 required positional argument: 'query'
