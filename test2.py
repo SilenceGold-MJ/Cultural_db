@@ -16,16 +16,16 @@ threshold = 0.95  # 汇总页达标率阈值
 filepath = '文物识别算法准确率测试.xlsx'
 pathimage = r'E:\小雁塔\8.6日拍摄测试样本照片（批处理）'
 proce = 3  # 测试进程数
-Test_Batch = '20200619_1'  # 测试批次
+Test_Batch = '20200713_1'  # 测试批次
 Test_Version = 'v1.0_201912181512'  # 测试版本
 
 
 if __name__ == '__main__':
 
-    # data=(CulturalAPI().get_summary_data(Test_Version,Test_Batch))
-    # data1=(CulturalAPI().get_results_summary_data(Test_Version,Test_Batch))
-    # print(data)
-    # print(data1)
+    data=(CulturalAPI().get_summary_data(Test_Version,Test_Batch))
+    data1=(CulturalAPI().get_results_summary_data(Test_Version,Test_Batch))
+    print(data)
+    print(data1)
 
     data2=CulturalAPI().get_record_sheet_data(Test_Version,Test_Batch)
     print(data2)
