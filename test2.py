@@ -24,9 +24,12 @@ if __name__ == '__main__':
 
     # data=(CulturalAPI().get_summary_data(Test_Version,Test_Batch))
     # data1=(CulturalAPI().get_results_summary_data(Test_Version,Test_Batch))
-
     # print(data)
     # print(data1)
+
+    data2=CulturalAPI().get_record_sheet_data(Test_Version,Test_Batch)
+    print(data2)
+
     data3=CulturalAPI().get_start_recording()
     print(data3)
 
