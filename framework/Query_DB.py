@@ -35,7 +35,7 @@ class Query_DB():#查询个数
             return (int(re.findall(r'\d+', results)[0]))
 
         except:
-            print("Error: unable to fetch data")
+            logger.info("Error: unable to fetch data")
 
         # 关闭数据库连接
         db.close()

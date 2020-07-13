@@ -109,12 +109,18 @@ def Summary(imagefile_path, i,Test_Batch,Test_Version):
 
 
 def TestValue2(rootdir, proce,Test_Batch,Test_Version):#支持多进程
+    Time_Stamp = int(time.time())
+    now =time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(Time_Stamp))
     manager = Manager()
     lock = manager.Lock()  # 产生钥匙
-    listPath = Pathlsit(rootdir)
+    datalist=Pathlsit(rootdir)
+    listPath = datalist[0]
     Total = (len(listPath))
     sql = "select count(*) from  %s WHERE test_version='%s' AND test_batch='%s' ;" % ('test_record_sheet',Test_Version,Test_Batch)
     A = Query_DB().getnum(sql)#查询测试进度
+    start_dic={"RunTime":now,"RunTime_int":Time_Stamp,"Test_Batch":Test_Batch,"Test_Version":Test_Version,"Total_Type":len(datalist[1]),"Sum_Numbers":Total,"Completed":A}
+    # logger.info(start_dic)
+    InsertDB().insert_Start_recording( 'start_recording', start_dic)#写入启动测试记录
     pool = multiprocessing.Pool(processes=proce)
     for i in range(A , Total):
         pool.apply_async(func=process, args=(listPath[i],Total,i,lock,Test_Batch,Test_Version))

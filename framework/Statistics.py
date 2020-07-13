@@ -17,7 +17,7 @@ def results_summary( threshold,Test_Version,Test_Batch,Time_Stamp):#获取汇总
     table_name1='test_record_sheet'
     Codelist=Query_DB().query_db_rowlist(table_name1, Test_Version, Test_Batch, 8)#获取值列表
 
-    #datalist=[]
+    datalist=[]
     for i in range(len(Codelist)):
         sql_pass= "select count(*) from  %s WHERE test_version='%s' AND test_batch='%s' AND Code=%s AND Result='PASS';" % (table_name1, Test_Version,Test_Batch,Codelist[i])
         sql_num ="select count(*) from  %s WHERE test_version='%s' AND test_batch='%s' AND Code=%s ;" % (table_name1, Test_Version,Test_Batch,Codelist[i])
@@ -50,10 +50,10 @@ def results_summary( threshold,Test_Version,Test_Batch,Time_Stamp):#获取汇总
             'Color':Accuracylist[1]
         }
         logger.info(dic)
-        #datalist.append(dic)
-        InsertDB().insert_Result('results_summary', dic)
+        datalist.append(dic)
+        #InsertDB().insert_Result('results_summary', dic)
 
-    #return datalist
+    return datalist
 
 
 
@@ -91,9 +91,34 @@ def summary_hz( threshold,Test_Version,Test_Batch,Time_Stamp):#读写汇总页�
     InsertDB().insert_summary( 'summary', dic_hz)
 
 def Statistics( threshold,Test_Version,Test_Batch):
-    Time_Stamp=int(time.time())
-    results_summary( threshold,Test_Version,Test_Batch,Time_Stamp)
-    summary_hz(threshold, Test_Version, Test_Batch, Time_Stamp)
+    Time_Stamp = int(time.time())
+    sql =  "select * from  %s WHERE test_version='%s' AND test_batch='%s' ;" % ('start_recording', Test_Version, Test_Batch)
+    Total_Type=Query_DB().query_db_all( sql)[-1]['Total_Type']#查测试类型数
+    sql = "select count(*) from  %s WHERE test_version='%s' AND test_batch='%s' ;" % ('results_summary',Test_Version,Test_Batch)
+    A = Query_DB().getnum(sql)#查询汇总进度
+    if  Total_Type>A:
+        datalist = results_summary(threshold, Test_Version, Test_Batch, Time_Stamp)
+        Total = len(datalist)
+        logger.info('写入数据中……')
+        for i in range(A, Total):
+            InsertDB().insert_Result('results_summary', datalist[i])
+    elif Total_Type==A:
+        logger.info('结果汇总页已经汇总完成，无需再次汇总！')
+    else:
+        logger.error('未知错误：预期总数%s,实际生成数%s'%(Total_Type,A))
+
+
+    sql =  "select * from  %s WHERE test_version='%s' AND test_batch='%s' ;" % ('summary', Test_Version, Test_Batch)
+    datalist = Query_DB().query_db_all(sql)#查询
+    if len(datalist)==0:
+        logger.info('写入数据中……')
+        summary_hz(threshold, Test_Version, Test_Batch, Time_Stamp)
+    elif len(datalist)==1:
+        logger.info('汇总语页数据，已经写入完成，无需再次汇总！')
+    else:
+        logger.error('未知错误,计数：%s ,数据：%s'% (len(datalist), datalist))
+
+
 
 def download(addr,Test_Version,Test_Batch):#下载数据到表格
     logger.info('开始获取导出数据……')

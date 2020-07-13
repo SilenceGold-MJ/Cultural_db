@@ -89,9 +89,7 @@ class InsertDB():
         cursor = db.cursor()
         dic_value = list(dicdata.values())
         Test_Batch,Test_Version,Test_Time,Time_Stamp,Total_Type,Sum_Numbers,Sum_Pass,Sum_Fail,Standard,UnStandard,threshold,StandardRate= dic_value
-
         # logger.info([test_batch, test_version, test_time, template, test_chart, expected_range, test_type, test_value, Timeconsuming, result, Color, Template_path, TestChart_path])
-
         # SQL 插入语句
         sql = "INSERT INTO  %s (Test_Batch,Test_Version,Test_Time,Time_Stamp,Total_Type,Sum_Numbers,Sum_Pass,Sum_Fail,Standard,UnStandard,threshold,StandardRate) \
                    VALUES ('%s','%s','%s',%s,%s,%s, %s,%s,%s,%s,%s,%s)" % \
@@ -100,6 +98,35 @@ class InsertDB():
             # 执行sql语句
             #print(sql)
             cursor.execute(sql)
+            # 执行sql语句
+            db.commit()
+            # cursor.connection.commit()  # 执行commit操作，插入语句才能生效
+
+        except:
+            # 发生错误时回滚
+            db.rollback()
+
+        # cursor.close()
+        # 关闭数据库连接
+        db.close()
+    def insert_Start_recording(self, table_name, dicdata):  # 插入启动记录
+        # 打开数据库连接
+        db = pymysql.connect(host, user, password, DB)
+
+        # 使用cursor()方法获取操作游标
+        cursor = db.cursor()
+        dic_value = list(dicdata.values())
+        RunTime,RunTime_int,Test_Batch,Test_Version,Total_Type,Sum_Numbers,Completed= dic_value
+        # logger.info([test_batch, test_version, test_time, template, test_chart, expected_range, test_type, test_value, Timeconsuming, result, Color, Template_path, TestChart_path])
+        # SQL 插入语句
+        sql = "INSERT INTO  %s (RunTime,RunTime_int,Test_Batch,Test_Version,Total_Type,Sum_Numbers,Completed) \
+                   VALUES ('%s',%s,'%s','%s',%s,%s,%s)" % \
+              (table_name, RunTime,RunTime_int,Test_Batch,Test_Version,Total_Type,Sum_Numbers,Completed)
+        try:
+            # 执行sql语句
+            #print(sql)
+            cursor.execute(sql)
+
             # 执行sql语句
             db.commit()
             # cursor.connection.commit()  # 执行commit操作，插入语句才能生效

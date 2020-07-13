@@ -12,10 +12,11 @@ logger = Logger(logger="run").getlog()
 
 threshold = 0.95  # 汇总页达标率阈值
 filepath = '文物识别算法准确率测试.xlsx'
-pathimage = r'D:\Python\python3\文物识别批量测试\8.6日拍摄测试样本照片（批处理）'
+pathimage = r'E:\小雁塔\8.6日拍摄测试样本照片（批处理）'
+#pathimage =r'E:\小雁塔\test'
 proce = 3  # 测试进程数
-Test_Batch = '20200619_1'  # 测试批次
-Test_Version = 'v1.0_201912181512'  # 测试版本
+Test_Batch = '20200713_2'  # 测试批次
+Test_Version = 'v1.0_201912181512'  # 测试算法版本
 
 
 if __name__ == '__main__':
@@ -24,5 +25,5 @@ if __name__ == '__main__':
     download(filepath, Test_Version, Test_Batch)#下载测试数据及汇总结果数据到Excel
     #get_failimage(Test_Version, Test_Batch)#获取失败图片
     SendEmail().send_attach(filepath)  # 发送测试生成的结果Excel
-    Shutdown(0)                         #  1判断时间为白天不自动关机，晚上执行关机；0执行完成后关机
+    Shutdown(1)                         #  1判断时间为白天不自动关机，晚上执行关机；0执行完成后关机
     # input('Press Enter to exit...')

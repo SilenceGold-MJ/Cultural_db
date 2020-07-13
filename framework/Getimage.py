@@ -30,7 +30,7 @@ def Pathlsit(rootdir):#排序
         for n in datalist[0]:
             if i == int(n.split('\\')[-2]):
                 Pathlist.append(n)
-    return Pathlist
+    return [Pathlist,testNO]
 
 def Failimgae(wide,code):
     newpath=os.getcwd()+"/"+"failimgae"+"/"+str(code)
