@@ -138,3 +138,21 @@ class InsertDB():
         # cursor.close()
         # 关闭数据库连接
         db.close()
+    def insert_all_data(self,sql):  # 插入数据
+        # 打开数据库连接
+        db = pymysql.connect(host, user, password, DB)
+        # 使用cursor()方法获取操作游标
+        cursor = db.cursor()
+        try:
+            # 执行sql语句
+            #print(sql)
+            cursor.execute(sql)
+            # 执行sql语句
+            db.commit()
+            # cursor.connection.commit()  # 执行commit操作，插入语句才能生效
+        except:
+            # 发生错误时回滚
+            db.rollback()
+        # cursor.close()
+        # 关闭数据库连接
+        db.close()

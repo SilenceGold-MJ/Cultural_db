@@ -1,4 +1,4 @@
-import configparser, os,time
+import configparser, os,time,json
 from framework.ExportExcle import *
 from framework.Query_DB import Query_DB
 from framework.InsertDB import InsertDB
@@ -59,8 +59,11 @@ def results_summary( threshold,Test_Version,Test_Batch,Time_Stamp):#获取汇总
 
 def summary_hz( threshold,Test_Version,Test_Batch,Time_Stamp):#读写汇总页数据，输出汇总语数据
     now = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(Time_Stamp))
-    data=CulturalAPI().get_results_summary_data(Test_Version,Test_Batch)
-    datalist=data['datalist'][data['time'][-1]]
+    data=json.loads(CulturalAPI().get_results_summary_data(Test_Version,Test_Batch))
+
+    datalist=data['datalist']
+    logger.info(datalist)
+
     SumNumbers = []
     SumPass = []
     SumFail = []
@@ -125,13 +128,15 @@ def download(addr,Test_Version,Test_Batch):#下载数据到表格
     data=(CulturalAPI().get_summary_data(Test_Version,Test_Batch))
     data1=(CulturalAPI().get_results_summary_data(Test_Version,Test_Batch))
     sql="select * from  %s WHERE test_version='%s' AND test_batch='%s' ;" % ('test_record_sheet', Test_Version,Test_Batch)
-    summary=data['datalist'][data['time'][-1]]
-    results_summary=data1['datalist'][data1['time'][-1]]
+    logger.info(data)
+    logger.info(data1)
+    summary=json.loads(data)['datalist'][0]
+    results_summary=json.loads(data1)['datalist']
     record_sheet=Query_DB().query_db_all(sql)
-    logger.info('开始写入数据！')
+    logger.info('开始导出数据到Excle！')
     ExportExcle(addr,record_sheet)
     SummaryExcle(addr, results_summary)
     VerticalExcle(addr, summary)
-    logger.info('导出数据完成！')
+    logger.info('导出Excle完成！')
 
 

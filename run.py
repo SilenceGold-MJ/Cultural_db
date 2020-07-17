@@ -14,9 +14,9 @@ threshold = 0.95  # 汇总页达标率阈值
 filepath = '文物识别算法准确率测试.xlsx'
 pathimage = r'E:\小雁塔\8.6日拍摄测试样本照片（批处理）'
 #pathimage =r'E:\小雁塔\test'
-proce = 3  # 测试进程数
+proce = 1  # 测试进程数
 Test_Batch = '20200713_2'  # 测试批次
-Test_Version = 'v1.0_201912181512'  # 测试算法版本
+Test_Version = 'v1.0_201812181345'  # 测试算法版本v1.0_201812181345
 
 
 if __name__ == '__main__':

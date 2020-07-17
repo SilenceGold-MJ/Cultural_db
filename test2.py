@@ -7,6 +7,7 @@ from framework.TestValue import *
 from framework.Statistics import *
 from framework.Query_DB import Query_DB
 from framework.CulturalAPI import CulturalAPI
+from framework.GetDBdata import GetDBdata
 from framework.logger import Logger
 
 logger = Logger(logger="run").getlog()
@@ -18,20 +19,30 @@ pathimage = r'E:\小雁塔\8.6日拍摄测试样本照片（批处理）'
 proce = 3  # 测试进程数
 Test_Batch = '20200713_1'  # 测试批次
 Test_Version = 'v1.0_201912181512'  # 测试版本
-
+dic_rc = {
+    "Code": 1,
+    'Test_Chart': 'IMG_20190807_110901.jpg'
+}
 
 if __name__ == '__main__':
+    #print(GetDBdata().get_db_data(dic_rc))
 
-    data=(CulturalAPI().get_summary_data(Test_Version,Test_Batch))
-    data1=(CulturalAPI().get_results_summary_data(Test_Version,Test_Batch))
-    print(data)
-    print(data1)
+    path=r'E:\小雁塔\8.6日拍摄测试样本照片（批处理）\3'
+    for i in os.listdir(path):
+        imagefile_path=path+"\\"+i
+        print(API3(imagefile_path))
 
-    data2=CulturalAPI().get_record_sheet_data(Test_Version,Test_Batch)
-    print(data2)
 
-    data3=CulturalAPI().get_start_recording()
-    print(data3)
+    # data=(CulturalAPI().get_summary_data(Test_Version,Test_Batch))
+    # data1=(CulturalAPI().get_results_summary_data(Test_Version,Test_Batch))
+    # print(data)
+    # print(data1)
+    #
+    # data2=CulturalAPI().get_record_sheet_data(Test_Version,Test_Batch)
+    # print(data2)
+    #
+    # data3=CulturalAPI().get_start_recording()
+    # print(data3)
 
 
     #TestValue2(pathimage,proce,Test_Batch,Test_Version)  #数据测试写入表格

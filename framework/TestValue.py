@@ -3,6 +3,7 @@ import base64
 import json
 import os, time, datetime
 import configparser
+from framework.GetDBdata import GetDBdata
 from framework.Getimage import *
 from framework.InsertDB import InsertDB
 from framework.Query_DB import Query_DB
@@ -18,7 +19,7 @@ configPath = os.path.join(proDir, "config\config.ini")
 cf = configparser.ConfigParser()
 cf.read(configPath, encoding="utf-8-sig")
 
-def API(imagefile_path):  # 给接口图片地址返回top3的值
+def API(imagefile_path):  # 服务器最新算法
     with open(imagefile_path, "rb") as f:
         # b64encode是编码，b64decode是解码
         base64_data = base64.b64encode(f.read())
@@ -42,7 +43,7 @@ def API(imagefile_path):  # 给接口图片地址返回top3的值
             return json.dumps(dics)
 
 
-def API2(imagefile_path):
+def API2(imagefile_path):#本地老算法
     with open(imagefile_path, "rb") as f:
         # b64encode是编码，b64decode是解码
         base64_data = base64.b64encode(f.read())
@@ -56,7 +57,28 @@ def API2(imagefile_path):
             return (response.text)
         except Exception as e:
             return ("服务可能未开启，" + str(e))
+def API3(imagefile_path):#读数据库数据
+    r'E:\小雁塔\8.6日拍摄测试样本照片（批处理）\0\IMG_20190807_110901.jpg'
+    dic_rc = {
+        "Code": int(imagefile_path.split('\\')[-2]),
+        'Test_Chart': imagefile_path.split('\\')[-1]
+    }
 
+    data=json.dumps(GetDBdata().get_db_data(dic_rc))
+    return data
+    # with open(imagefile_path, "rb") as f:
+    #     # b64encode是编码，b64decode是解码
+    #     base64_data = base64.b64encode(f.read())
+    #     str_base64 = str(base64_data, 'utf-8')
+    #     try:
+    #         url = "http://192.168.1.182:8888/Disc"
+    #         # querystring = {"image_base64":str_base64,"image_name":imagefile_path.split('\\')[-1]}#imagefile_path.split('\\')[-1]#, params=querystring
+    #         payload = {"image_base64": str_base64,
+    #                    "image_name": imagefile_path.split('\\')[-1]}  # imagefile_path.split('\\')[-1]
+    #         response = requests.request("post", url, data=(payload))
+    #         return (response.text)
+    #     except Exception as e:
+    #         return ("服务可能未开启，" + str(e))
 
 def Summary(imagefile_path, i,Test_Batch,Test_Version):
     Time_Stamp = int(time.time())
