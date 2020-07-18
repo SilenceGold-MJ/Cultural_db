@@ -130,28 +130,33 @@ def Summary(imagefile_path, i,Test_Batch,Test_Version):
     return dic
 
 
-def TestValue2(rootdir, proce,Test_Batch,Test_Version):#支持多进程
+def TestValue2(rootdir, proce,Test_Batch,Test_Version,Batchinfo):#支持多进程
     Time_Stamp = int(time.time())
     now =time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(Time_Stamp))
+
     manager = Manager()
     lock = manager.Lock()  # 产生钥匙
     datalist=Pathlsit(rootdir)
     listPath = datalist[0]
-    Total = (len(listPath))
+    Total = Batchinfo['total_num']
     sql = "select count(*) from  %s WHERE test_version='%s' AND test_batch='%s' ;" % ('test_record_sheet',Test_Version,Test_Batch)
     A = Query_DB().getnum(sql)#查询测试进度
-    start_dic={"RunTime":now,"RunTime_int":Time_Stamp,"Test_Batch":Test_Batch,"Test_Version":Test_Version,"Total_Type":len(datalist[1]),"Sum_Numbers":Total,"Completed":A}
+
+    start_dic={"RunTime":now,"RunTime_int":Time_Stamp,"Test_Batch":Test_Batch,"Test_Version":Test_Version,"Total_Type":Batchinfo['types_num'],"Sum_Numbers":  Total,"Completed":A}
     # logger.info(start_dic)
     InsertDB().insert_Start_recording( 'start_recording', start_dic)#写入启动测试记录
+
+
     pool = multiprocessing.Pool(processes=proce)
     for i in range(A , Total):
-        pool.apply_async(func=process, args=(listPath[i],Total,i,lock,Test_Batch,Test_Version))
+        pool.apply_async(func=process, args=(listPath[i],Total,i,lock,Test_Batch,Test_Version,Batchinfo))
     pool.close()
     pool.join()  # 在join之前一定要调用close，否则报错
 
-def process(imagefile_path,Total,i,lock,Test_Batch,Test_Version):
+def process(imagefile_path,Total,i,lock,Test_Batch,Test_Version,Batchinfo):
 
     dic = Summary(imagefile_path, i,Test_Batch,Test_Version)
+
     lock.acquire()  ##拿到钥匙进门,其他进程阻塞, acqurie和release之间的代码只能被一个进程执行
     #SummaryExcle(addr, dic, title, 10)
     InsertDB().insert_data('test_record_sheet',  dic)#插入数据库测试记录数据

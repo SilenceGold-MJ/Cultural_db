@@ -1,9 +1,13 @@
 #!/user/bin/env python3
 # -*- coding: utf-8 -*-
+
 from framework.Query_DB import Query_DB
-import time,json
+import time,json,os
+import base64
+
 from framework.InsertDB import InsertDB
 from framework.logger import Logger
+
 logger = Logger(logger="CulturalAPI").getlog()
 
 class CulturalAPI():
@@ -11,6 +15,8 @@ class CulturalAPI():
         table_name='summary'
         sql_all = "select * from  %s WHERE test_version='%s' AND test_batch='%s';" % (table_name, test_version, test_batch)
         list_all = Query_DB().query_db_all(sql_all)
+        logger.info(list_all)
+        del list_all[0]['deletes']
         dic = {
                 "message": "操作成功",
                 "result_code": "0000",
@@ -25,6 +31,7 @@ class CulturalAPI():
         table_name = 'results_summary'
         sql_all = "select * from  %s WHERE test_version='%s' AND test_batch='%s';" % ( table_name, test_version, test_batch)
         list_all = Query_DB().query_db_all(sql_all)
+        # del list_all[0]['deletes']
         dic = {
                 "message": "操作成功",
                 "result_code": "0000",
@@ -43,17 +50,23 @@ class CulturalAPI():
                 "datalist":list_all ,
             }
         return json.dumps(dic)
-    def get_start_recording(self):#获取启动记录页数据
+    def get_start_recording(self):#获取版本和批次号
 
-        sql= "select * from  %s ;" % ('algorithm_version')
-        sql_batch = "select * from  %s ;" % ('sample_batch')
+        sql= "select * from  %s WHERE deletes=0;" % ('algorithm_version')
+        sql_batch = "select * from  %s WHERE deletes=0;" % ('sample_batch')
+
         list_row_version=Query_DB().query_db_all(sql )
         list_row_batch = Query_DB().query_db_all(sql_batch)
         Test_Batch=[]
         Test_Version=[]
+        dicdata={}
+        Test_Version.sort()
+        Test_Version.sort()
         for i in list_row_batch:
-            logger.info(i)
+
             Test_Batch.append(i['batch'])
+            dicdata.update({i['batch']:i})
+
         for i in list_row_version:
             Test_Version.append(i['version'])
 
@@ -64,6 +77,7 @@ class CulturalAPI():
                 'Test_Batch':list(set(Test_Batch)),
                 'Test_Version':list(set(Test_Version)),
                 #"datalist":list_row ,
+                'dicdata':dicdata
             }
         return json.dumps(dic)
 
@@ -210,3 +224,48 @@ class CulturalAPI():
                 "datalist": [],
             }
             return json.dumps(dic)
+
+
+    def get_summary(self):#获取结果页数据
+        table_name = 'summary'
+        sql_all = "select * from  %s WHERE deletes=0;" % ( table_name)
+        list_all = Query_DB().query_db_all(sql_all)
+        dic = {
+                "message": "操作成功",
+                "result_code": "0000",
+                "counts": len(list_all),
+                "datalist":list_all ,
+            }
+        return json.dumps(dic)
+
+    def download_excle(self,dic):#获取结果页数据
+        from framework.Statistics import Statistics
+
+        dic_value = list(dic.values())
+        filename, Test_Version, Test_Batch = dic_value
+        try:
+            Statistics().download(filename, Test_Version, Test_Batch)  # 下载测试数据及汇总结果数据到Excel
+            with open(os.getcwd() + "\\" + filename, "rb") as f:
+                # b64encode是编码，b64decode是解码
+                base64_data = base64.b64encode(f.read())
+                str_base64 = str(base64_data, 'utf-8')
+                dic = {
+                    "message": "操作成功",
+                    "result_code": "0000",
+                    "datalist": {'filename':filename,
+                                 'filebase64':str_base64,
+                                 }
+                }
+                logger.info(dic)
+                return json.dumps(dic)
+
+
+        except Exception as e:
+            dic = {
+                "message": "操作异常%s" % e,
+                "result_code": "4000",
+                "datalist": [],
+            }
+            return json.dumps(dic)
+
+

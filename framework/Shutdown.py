@@ -24,3 +24,5 @@ def Shutdown(key):#1，判断时间为白天不自动关机，晚上执行关机
     elif key==0:
         logger.info('自动化测试已完成，执行30秒后自动关机！')
         os.system('shutdown -s -t 30')  # 测试完成自动关机
+    elif key==2:
+        logger.info('自动化测试已完成，不执行自动关机！')
