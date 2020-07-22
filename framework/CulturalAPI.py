@@ -242,10 +242,18 @@ class CulturalAPI():
         from framework.Statistics import Statistics
 
         dic_value = list(dic.values())
-        filename, Test_Version, Test_Batch = dic_value
+        filenames, Test_Version, Test_Batch = dic_value
+        filename = '%s_%s.xlsx' % (Test_Batch, Test_Version)
+        filepath=os.getcwd() + '\\excle\\'+ filename
+        logger.info(filepath)
         try:
-            Statistics().download(filename, Test_Version, Test_Batch)  # 下载测试数据及汇总结果数据到Excel
-            with open(os.getcwd() + "\\" + filename, "rb") as f:
+            if os.path.exists(filepath)==True:
+                logger.info('excle存在，不需要后台导出excle')
+                pass
+            else:
+                logger.info('excle不存在，需要后台导出excle')
+                Statistics().download(filename, Test_Version, Test_Batch)  # 下载测试数据及汇总结果数据到Excel
+            with open(filepath, "rb") as f:
                 # b64encode是编码，b64decode是解码
                 base64_data = base64.b64encode(f.read())
                 str_base64 = str(base64_data, 'utf-8')
