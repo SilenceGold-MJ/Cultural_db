@@ -125,7 +125,8 @@ class Statistics():
         else:
             logger.error('未知错误,计数：%s ,数据：%s' % (len(datalist), datalist))
 
-    def download(self,addr, Test_Version, Test_Batch):  # 下载数据到表格
+    def download(self,filename, Test_Version, Test_Batch):  # 下载数据到表格
+        addr=os.getcwd() + '\\excle\\'+filename
         logger.info('开始获取导出数据……')
         data = (CulturalAPI().get_summary_data(Test_Version, Test_Batch))
         data1 = (CulturalAPI().get_results_summary_data(Test_Version, Test_Batch))

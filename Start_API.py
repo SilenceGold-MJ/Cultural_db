@@ -7,7 +7,7 @@ from framework.Getimage import Getimage
 from flask import request
 
 from framework.logger import Logger
-logger = Logger(logger="API").getlog()
+logger = Logger(logger="Start_API").getlog()
 
 '''
 flask： web框架，通过flask提供的装饰器@server.route()将普通函数转换为服务
@@ -164,32 +164,67 @@ def Addtestinfo():
 def SampleBatch():
     params = flask.request.json  # 当客户端没有传json类型或者没传时候，直接get就会报错。
     # params = flask.request.json #入参是字典时候用这个。
+
     if params:
-        batch_path=params.get("batch_path")
-        imageinfo=Getimage(batch_path)
-        types_num=len(list(set(imageinfo[1])))
-        total_num=len(imageinfo[0])
+        try:
+            batch_path = params.get("batch_path")
+            imageinfo = Getimage(batch_path)
+            types_num = len(list(set(imageinfo[1])))
+            total_num = len(imageinfo[0])
+
+            dic = {
+                "batch": params.get("batch"),
+                "types_num": types_num,
+                "total_num": total_num,
+                "batch_date": params.get("batch_date"),
+                "delete": 0,
+                "batch_path": batch_path.replace('\\', '/'),
+            }
+
+            data = CulturalAPI().SampleBatch(dic)
+            logger.info("'/SampleBatch',methods=['post']：%s；%s" % (str(dic), str(data)))
+            return data
+        except Exception as e:
+            data = json.dumps({"result_code": 4000, "message": "样本路径不准确，请重新输入（%s）。" % e})
+        logger.error("'/SampleBatch',methods=['post']：" + str( json.loads(data)))
+        return data
+    else:
+        data = json.dumps({"result_code": 3002, "message": "入参必须为json类型。"})
+        logger.info("'/SampleBatch',methods=['post']：" + str(data))
+        return data
+
+
+
+
+
+
+@server.route('/Getform', methods=['post'])  # 入参为json
+def getform():#获取列表数据
+    # table_name = 'summary'
+    # data = CulturalAPI().getform(table_name)
+    # logger.info("'/GetSummary',methods=['post']：%s" % (str(data)))
+    # return data
+
+    params = flask.request.json  # 当客户端没有传json类型或者没传时候，直接get就会报错。
+    # params = flask.request.json #入参是字典时候用这个。
+    if params:
         dic = {
-            "batch": params.get("batch"),
-            "types_num": types_num,
-            "total_num": total_num,
-            "batch_date": params.get("batch_date"),
-            "delete": 0,
-            "batch_path": batch_path.replace('\\','/'),
+            "table_name":params.get("table_name"),
+            # "Test_Version": params.get("Test_Version"),
+            # "Test_Batch": params.get("Test_Batch"),
         }
 
-        data =CulturalAPI().SampleBatch(dic)
-        logger.info("'/SampleBatch',methods=['post']：%s；%s" % (str(dic), str(data)))
+        logger.info("'/getform',methods=['post']：%s；" % (str(dic)))
+        data = CulturalAPI().getform(dic['table_name'])
+        logger.info("'/getform',methods=['post']：%s" % ( str(data)))
         return data
     else:
         data = json.dumps({"result_code": 3002, "msg": "入参必须为json类型。"})
-        logger.info("'/SampleBatch',methods=['post']：" + str(data))
+        logger.info("'/DownloadExcle',methods=['post']：" + str(data))
         return data
-@server.route('/GetSummary', methods=['post'])  # 入参为json
-def GetSummary():#获取测试批次和版本列表
-    data = CulturalAPI().get_summary()
-    logger.info("'/GetSummary',methods=['post']：%s" % (str(data)))
-    return data
+
+
+
 @server.route('/DownloadExcle', methods=['post'])  # 入参为json
 def DownloadExcle():#下载excel
 
@@ -210,6 +245,26 @@ def DownloadExcle():#下载excel
         data = json.dumps({"result_code": 3002, "msg": "入参必须为json类型。"})
         logger.info("'/DownloadExcle',methods=['post']：" + str(data))
         return data
+
+
+@server.route('/del_summary_data', methods=['post'])  # 入参为json
+def del_summary_data():#删除一行数据
+    params = flask.request.json  # 当客户端没有传json类型或者没传时候，直接get就会报错。
+    # params = flask.request.json #入参是字典时候用这个。
+    if params:
+        dic = {
+            "dic_data": params.get("dic_data"),
+        }
+        logger.info("'/del_summary_data',methods=['post']：%s；" % (str(dic["dic_data"])))
+        #data = CulturalAPI().del_summary_data(dic["table_name"],dic['Test_Version'],dic['Test_Batch'])
+        data = CulturalAPI().del_summary_data(dic["dic_data"])
+        logger.info("'/del_summary_data',methods=['post']：%s" % ( str(dic["dic_data"])))
+        return data
+    else:
+        data = json.dumps({"result_code": 3002, "msg": "入参必须为json类型。"})
+        logger.info("'/del_summary_data',methods=['post']：" + str(data))
+        return data
+
 
 if __name__ == '__main__':
     server.run(debug=True, port=8408, host='0.0.0.0')  # 指定端口、host,0.0.0.0代表不管几个网卡，任何ip都可以访问

@@ -1,18 +1,8 @@
-import subprocess
-import os ,json
 
+list_all=[{"ID": 1, "Test_Batch": "20200619_1", "Test_Version": "v1.0_201812181345", "Test_Time": "2020/06/23 10:27:19", "Time_Stamp": 1592879239, "Total_Type": 297, "Sum_Numbers": 16548, "Sum_Pass": 15137, "Sum_Fail": 1411, "Standard": 239, "UnStandard": 58, "threshold": 0.95, "StandardRate": 0.8047, "deletes": 0}, {"ID": 2, "Test_Batch": "20200713_1", "Test_Version": "v1.0_201812181345", "Test_Time": "2020/07/13 10:13:12", "Time_Stamp": 1594606392, "Total_Type": 3, "Sum_Numbers": 244, "Sum_Pass": 107, "Sum_Fail": 137, "Standard": 0, "UnStandard": 3, "threshold": 0.95, "StandardRate": 0.0, "deletes": 0}, {"ID": 3, "Test_Batch": "20200713_2", "Test_Version": "v1.1_201908291512", "Test_Time": "2020/07/16 08:57:48", "Time_Stamp": 1594861068, "Total_Type": 297, "Sum_Numbers": 16548, "Sum_Pass": 16202, "Sum_Fail": 346, "Standard": 285, "UnStandard": 12, "threshold": 0.95, "StandardRate": 0.9596, "deletes": 0}, {"ID": 4, "Test_Batch": "20200713_2", "Test_Version": "v1.0_201812181345", "Test_Time": "2020/07/17 00:35:27", "Time_Stamp": 1594917327, "Total_Type": 297, "Sum_Numbers": 16548, "Sum_Pass": 15137, "Sum_Fail": 1411, "Standard": 239, "UnStandard": 58, "threshold": 0.95, "StandardRate": 0.8047, "deletes": 0}]
+#dic={"ID": 1, "Test_Batch": "20200619_1", "Test_Version": "v1.0_201812181345", "Test_Time": "2020/06/23 10:27:19", "Time_Stamp": 1592879239, "Total_Type": 297, "Sum_Numbers": 16548, "Sum_Pass": 15137, "Sum_Fail": 1411, "Standard": 239, "UnStandard": 58, "threshold": 0.95, "StandardRate": 0.8047, "deletes": 0}
+del_list = ['deletes', 'Time_Stamp', 'Test_ID', 'Color']
+for i in del_list:
 
-from framework.CulturalAPI import CulturalAPI
-#
-# cmd='"D:\Program Files (x86)\python3\python3.exe" E:\小雁塔\program+pycaffe20190701\文物测试\Cultural_db/run.py'
-#
-# subprocess.Popen(cmd, shell=True)
-dic = {
-    "filename": 'wwcese.xlsx',
-    "Test_Version":'v1.0_201812181345' ,
-    "Test_Batch":'20200619_1',
-}
-data=(CulturalAPI().download_excle(dic))
-print(json.loads(data))
-# /
-# # download(filename, Test_Version, Test_Batch)
+    if i in list_all:
+        del list_all

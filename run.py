@@ -18,7 +18,7 @@ Test_Version = 'v1.0_201812181345'
 pathimage = data['dicdata'][Test_Batch]['batch_path']  #pathimage =r'E:\小雁塔\test'
 Batchinfo=data['dicdata'][Test_Batch]#样本信息
 threshold = 0.95  # 汇总页达标率阈值
-filepath = '文物识别算法准确率测试.xlsx'
+filename = '%s_%s.xlsx'%(Test_Batch,Test_Version)
 proce = 1  # 测试进程数
 
 
@@ -26,8 +26,8 @@ proce = 1  # 测试进程数
 if __name__ == '__main__':
     TestValue2(pathimage,proce,Test_Batch,Test_Version,Batchinfo)  #数据测试写入表格
     Statistics().Statistics( threshold,Test_Version,Test_Batch) # 汇总测试数据到数据库
-    Statistics().download(filepath, Test_Version, Test_Batch)#下载测试数据及汇总结果数据到Excel
+    Statistics().download(filename, Test_Version, Test_Batch)#下载测试数据及汇总结果数据到Excel
     #get_failimage(Test_Version, Test_Batch)#获取失败图片
-    SendEmail().send_attach(filepath)  # 发送测试生成的结果Excel
+    SendEmail().send_attach(filename)  # 发送测试生成的结果Excel
     Shutdown(2)                         #  1判断时间为白天不自动关机，晚上执行关机；0执行完成后关机；2执行完成后不会自动关机
-    # input('Press Enter to exit...')
+    input('Press Enter to exit...')

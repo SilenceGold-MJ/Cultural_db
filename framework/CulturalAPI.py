@@ -16,7 +16,7 @@ class CulturalAPI():
         sql_all = "select * from  %s WHERE test_version='%s' AND test_batch='%s';" % (table_name, test_version, test_batch)
         list_all = Query_DB().query_db_all(sql_all)
         logger.info(list_all)
-        del list_all[0]['deletes']
+
         dic = {
                 "message": "操作成功",
                 "result_code": "0000",
@@ -25,6 +25,22 @@ class CulturalAPI():
             }
         return json.dumps(dic)
 
+    def del_summary_data(self,dics):#删除一个汇总结果
+        dic_values=list(dics.values())
+        dic_keys = list(dics.keys())
+
+        #sql_all = "select * from  %s WHERE test_version='%s' AND test_batch='%s';" % (table_name, test_version, test_batch)
+        sql_all="UPDATE %s SET deletes=1 WHERE %s='%s' and %s='%s';" % (dic_values[0],dic_keys[1],dic_values[1],dic_keys[2],dic_values[2])
+        list_all = Query_DB().db_all_No_return(sql_all)
+        logger.info(list_all)
+        #del list_all[0]['deletes']
+        dic = {
+                "message": "操作成功",
+                "result_code": "0000",
+                # "counts": len(list_all),
+                # "datalist":list_all ,
+            }
+        return json.dumps(dic)
 
 
     def get_results_summary_data(self,test_version, test_batch):#获取汇总页的数据
@@ -156,6 +172,7 @@ class CulturalAPI():
         table_name='algorithm_version'
         dic_value = list(dicdata.values())
         version,release_time,developer,deletes= dic_value
+        release_time=release_time.replace('T'," ")
         sql_chachong="select count(*) from   %s WHERE version='%s';"%(table_name,version)
         if Query_DB().getnum(sql_chachong)==0:
 
@@ -193,6 +210,8 @@ class CulturalAPI():
         table_name='sample_batch'
         dic_value = list(dicdata.values())
         batch,types_num,total_num,batch_date,deletes,batch_path= dic_value
+
+        batch_date=batch_date.replace('T'," ")
         sql_chachong="select count(*) from   %s WHERE batch='%s';"%(table_name,batch)
         print(sql_chachong)
         if Query_DB().getnum(sql_chachong)==0:
@@ -226,26 +245,39 @@ class CulturalAPI():
             return json.dumps(dic)
 
 
-    def get_summary(self):#获取结果页数据
-        table_name = 'summary'
+    def getform(self,table_name):#获取结果页数据
+        logger.info('检查getform' )
         sql_all = "select * from  %s WHERE deletes=0;" % ( table_name)
         list_all = Query_DB().query_db_all(sql_all)
+
         dic = {
-                "message": "操作成功",
-                "result_code": "0000",
-                "counts": len(list_all),
-                "datalist":list_all ,
-            }
+            "message": "操作成功",
+            "result_code": "0000",
+            "counts": len(list_all),
+            "datalist": list_all,
+        }
         return json.dumps(dic)
+
+
+
+
 
     def download_excle(self,dic):#获取结果页数据
         from framework.Statistics import Statistics
 
         dic_value = list(dic.values())
-        filename, Test_Version, Test_Batch = dic_value
+        filenames, Test_Version, Test_Batch = dic_value
+        filename = '%s_%s.xlsx' % (Test_Batch, Test_Version)
+        filepath=os.getcwd() + '\\excle\\'+ filename
+        logger.info(filepath)
         try:
-            Statistics().download(filename, Test_Version, Test_Batch)  # 下载测试数据及汇总结果数据到Excel
-            with open(os.getcwd() + "\\" + filename, "rb") as f:
+            if os.path.exists(filepath)==True:
+                logger.info('excle存在，不需要后台导出excle')
+                pass
+            else:
+                logger.info('excle不存在，需要后台导出excle')
+                Statistics().download(filename, Test_Version, Test_Batch)  # 下载测试数据及汇总结果数据到Excel
+            with open(filepath, "rb") as f:
                 # b64encode是编码，b64decode是解码
                 base64_data = base64.b64encode(f.read())
                 str_base64 = str(base64_data, 'utf-8')
@@ -268,4 +300,14 @@ class CulturalAPI():
             }
             return json.dumps(dic)
 
+    def getform(self,table_name):#获取数据
 
+        sql_all = "select * from  %s WHERE deletes=0;" % ( table_name)
+        list_all = Query_DB().query_db_all(sql_all)
+        dic = {
+                "message": "操作成功",
+                "result_code": "0000",
+                "counts": len(list_all),
+                "datalist":list_all ,
+            }
+        return json.dumps(dic)
