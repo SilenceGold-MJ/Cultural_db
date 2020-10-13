@@ -56,6 +56,7 @@ class Query_DB():#查询个数
 
             cursor.execute(sql)
             # 获取所有记录列表
+            logger.info(sql)
             results = cursor.fetchall()
             desc = cursor.description#提取数据库表头字段
             key_list=( ",".join([item[0] for item in desc]))#提取数据库表头字段

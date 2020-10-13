@@ -6,6 +6,7 @@ import time,json,os
 import base64
 
 from framework.InsertDB import InsertDB
+
 from framework.logger import Logger
 
 logger = Logger(logger="CulturalAPI").getlog()
@@ -171,16 +172,16 @@ class CulturalAPI():
     def Addtestinfo(self,dicdata):#添加算法
         table_name='algorithm_version'
         dic_value = list(dicdata.values())
-        version,release_time,developer,deletes= dic_value
-        release_time=release_time.replace('T'," ")
+        version,Test_Time,developer,deletes= dic_value
+        Test_Time=Test_Time.replace('T'," ")
         sql_chachong="select count(*) from   %s WHERE version='%s';"%(table_name,version)
         if Query_DB().getnum(sql_chachong)==0:
 
             # logger.info([test_batch, test_version, test_time, template, test_chart, expected_range, test_type, test_value, Timeconsuming, result, Color, Template_path, TestChart_path])
             # SQL 插入语句
-            sql = "INSERT INTO  %s (version,release_time,developer,deletes) \
+            sql = "INSERT INTO  %s (version,Test_Time,developer,deletes) \
                        VALUES ('%s','%s','%s',%s)" % \
-                  (table_name, version, release_time, developer, deletes)
+                  (table_name, version, Test_Time, developer, deletes)
             try:
                 logger.info(sql)
                 InsertDB().insert_all_data(sql)
@@ -209,17 +210,17 @@ class CulturalAPI():
     def SampleBatch(self,dicdata):#添加样本
         table_name='sample_batch'
         dic_value = list(dicdata.values())
-        batch,types_num,total_num,batch_date,deletes,batch_path= dic_value
+        batch,types_num,total_num,Test_Time,deletes,batch_path= dic_value
 
-        batch_date=batch_date.replace('T'," ")
+        Test_Time=Test_Time.replace('T'," ")
         sql_chachong="select count(*) from   %s WHERE batch='%s';"%(table_name,batch)
         print(sql_chachong)
         if Query_DB().getnum(sql_chachong)==0:
             # logger.info([test_batch, test_version, test_time, template, test_chart, expected_range, test_type, test_value, Timeconsuming, result, Color, Template_path, TestChart_path])
             # SQL 插入语句
-            sql = "INSERT INTO  %s (batch,types_num,total_num,batch_date,deletes,batch_path) \
+            sql = "INSERT INTO  %s (batch,types_num,total_num,Test_Time,deletes,batch_path) \
                        VALUES ('%s',%s,%s,'%s',%s,'%s')" % \
-                  (table_name, batch,types_num,total_num,batch_date,deletes,batch_path)
+                  (table_name, batch,types_num,total_num,Test_Time,deletes,batch_path)
             try:
                 logger.info(sql)
                 InsertDB().insert_all_data(sql)
@@ -243,22 +244,6 @@ class CulturalAPI():
                 "datalist": [],
             }
             return json.dumps(dic)
-
-
-    def getform(self,table_name):#获取结果页数据
-        logger.info('检查getform' )
-        sql_all = "select * from  %s WHERE deletes=0;" % ( table_name)
-        list_all = Query_DB().query_db_all(sql_all)
-
-        dic = {
-            "message": "操作成功",
-            "result_code": "0000",
-            "counts": len(list_all),
-            "datalist": list_all,
-        }
-        return json.dumps(dic)
-
-
 
 
 
@@ -300,9 +285,9 @@ class CulturalAPI():
             }
             return json.dumps(dic)
 
-    def getform(self,table_name):#获取数据
+    def getform(self,dic):#获取数据
 
-        sql_all = "select * from  %s WHERE deletes=0;" % ( table_name)
+        sql_all = "select * from  %s WHERE deletes=0  ORDER BY  %s  DESC;" % ( dic['table_name'],dic['Latest_name'])
         list_all = Query_DB().query_db_all(sql_all)
         dic = {
                 "message": "操作成功",

@@ -147,7 +147,7 @@ def Addtestinfo():
     if params:
         dic = {
             "version":params.get("version"),
-            "release_time": params.get("release_time"),
+            "Test_Time": params.get("Test_Time"),
             "developer": params.get("developer"),
             "deletes": 0
         }
@@ -176,7 +176,7 @@ def SampleBatch():
                 "batch": params.get("batch"),
                 "types_num": types_num,
                 "total_num": total_num,
-                "batch_date": params.get("batch_date"),
+                "Test_Time": params.get("Test_Time"),
                 "delete": 0,
                 "batch_path": batch_path.replace('\\', '/'),
             }
@@ -210,12 +210,13 @@ def getform():#获取列表数据
     if params:
         dic = {
             "table_name":params.get("table_name"),
+            'Latest_name':params.get("Latest_name")
             # "Test_Version": params.get("Test_Version"),
             # "Test_Batch": params.get("Test_Batch"),
         }
-
+         # Latest_name 指导字段最新排序
         logger.info("'/getform',methods=['post']：%s；" % (str(dic)))
-        data = CulturalAPI().getform(dic['table_name'])
+        data = CulturalAPI().getform(dic)
         logger.info("'/getform',methods=['post']：%s" % ( str(data)))
         return data
     else:
