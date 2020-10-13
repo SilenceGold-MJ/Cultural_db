@@ -145,7 +145,7 @@ class InsertDB():
         cursor = db.cursor()
         try:
             # 执行sql语句
-            #print(sql)
+            print(sql)
             cursor.execute(sql)
             # 执行sql语句
             db.commit()

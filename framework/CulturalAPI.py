@@ -175,33 +175,43 @@ class CulturalAPI():
         version,Test_Time,developer,deletes= dic_value
         Test_Time=Test_Time.replace('T'," ")
         sql_chachong="select count(*) from   %s WHERE version='%s';"%(table_name,version)
-        if Query_DB().getnum(sql_chachong)==0:
+        sql_chachong_0 = "select count(*) from   %s WHERE deletes=0 and version='%s';" % (table_name, version)
+        sql_chachong_1 = "select count(*) from   %s WHERE deletes=1 and version='%s';" % (table_name, version)
+
+        if Query_DB().getnum(sql_chachong_0) != 0:#显示的存在，提示已存在
+            dic = {
+                "message": "该版本号在数据库中已存在，请重新添加！",
+                "result_code": "0001",
+                "datalist": [],
+            }
+            return json.dumps(dic)
+
+        elif Query_DB().getnum(sql_chachong_1)!= 0:#不显示的存在，更新它
+
+            sql = "UPDATE  %s SET version='%s',Test_Time='%s',developer='%s',deletes=%s WHERE version='%s';" % (
+                table_name, version, Test_Time, developer, deletes,version)
+
+            logger.info(sql)
+            InsertDB().insert_all_data(sql)
+            dic = {
+                "message": "操作成功",
+                "result_code": "0000",
+                "datalist": [],
+            }
+            return json.dumps(dic)
+
+        elif Query_DB().getnum(sql_chachong)==0:#均不在的插入
 
             # logger.info([test_batch, test_version, test_time, template, test_chart, expected_range, test_type, test_value, Timeconsuming, result, Color, Template_path, TestChart_path])
             # SQL 插入语句
             sql = "INSERT INTO  %s (version,Test_Time,developer,deletes) \
                        VALUES ('%s','%s','%s',%s)" % \
                   (table_name, version, Test_Time, developer, deletes)
-            try:
-                logger.info(sql)
-                InsertDB().insert_all_data(sql)
-                dic = {
-                    "message": "操作成功",
-                    "result_code": "0000",
-                    "datalist": [],
-                }
-                return json.dumps(dic)
-            except Exception as e:
-                dic = {
-                    "message": "操作异常%s" % e,
-                    "result_code": "4000",
-                    "datalist": [],
-                }
-                return json.dumps(dic)
-        else:
+            logger.info(sql)
+            InsertDB().insert_all_data(sql)
             dic = {
-                "message": "该版本号在数据库中已存在，请重新添加！",
-                "result_code": "0001",
+                "message": "操作成功",
+                "result_code": "0000",
                 "datalist": [],
             }
             return json.dumps(dic)
@@ -213,34 +223,43 @@ class CulturalAPI():
         batch,types_num,total_num,Test_Time,deletes,batch_path= dic_value
 
         Test_Time=Test_Time.replace('T'," ")
-        sql_chachong="select count(*) from   %s WHERE batch='%s';"%(table_name,batch)
-        print(sql_chachong)
-        if Query_DB().getnum(sql_chachong)==0:
-            # logger.info([test_batch, test_version, test_time, template, test_chart, expected_range, test_type, test_value, Timeconsuming, result, Color, Template_path, TestChart_path])
-            # SQL 插入语句
-            sql = "INSERT INTO  %s (batch,types_num,total_num,Test_Time,deletes,batch_path) \
-                       VALUES ('%s',%s,%s,'%s',%s,'%s')" % \
-                  (table_name, batch,types_num,total_num,Test_Time,deletes,batch_path)
-            try:
-                logger.info(sql)
-                InsertDB().insert_all_data(sql)
-                dic = {
-                    "message": "操作成功",
-                    "result_code": "0000",
-                    "datalist": [],
-                }
-                return json.dumps(dic)
-            except Exception as e:
-                dic = {
-                    "message": "操作异常%s" % e,
-                    "result_code": "4000",
-                    "datalist": [],
-                }
-                return json.dumps(dic)
-        else:
+
+
+        sql_chachong_0="select count(*) from   %s WHERE deletes=0 and batch='%s';"%(table_name,batch)
+        sql_chachong_1="select count(*) from   %s WHERE deletes=1 and batch='%s';"%(table_name,batch)
+        sql_chachong = "select count(*) from   %s WHERE  batch='%s';" % (table_name, batch)
+        if Query_DB().getnum(sql_chachong_0) != 0:
             dic = {
                 "message": "该批次样本在数据库中已存在，请重新添加！",
                 "result_code": "0001",
+                "datalist": [],
+            }
+            return json.dumps(dic)
+
+        elif Query_DB().getnum(sql_chachong_1)!= 0:
+            # sql = "UPDATE  %s SET (batch,types_num,total_num,Test_Time,deletes,batch_path) \
+            #            VALUES ('%s',%s,%s,'%s',%s,'%s') WHERE batch=%s;" % \
+            #       (table_name, batch,types_num,total_num,Test_Time,deletes,batch_path,batch)
+            sql = "UPDATE  %s SET batch='%s',types_num=%s,total_num=%s,Test_Time='%s',deletes=%s,batch_path='%s' WHERE batch='%s';" % (
+            table_name, batch, types_num, total_num, Test_Time, deletes, batch_path, batch)
+            InsertDB().insert_all_data(sql)
+            dic = {
+                "message": "操作成功",
+                "result_code": "0000",
+                "datalist": [],
+            }
+            return json.dumps(dic)
+
+
+        elif Query_DB().getnum(sql_chachong)== 0:
+            # logger.info([test_batch, test_version, test_time, template, test_chart, expected_range, test_type, test_value, Timeconsuming, result, Color, Template_path, TestChart_path])
+            # SQL 插入语句
+            sql = "INSERT INTO  %s (batch,types_num,total_num,Test_Time,deletes,batch_path)  VALUES ('%s',%s,%s,'%s',%s,'%s')" % \
+                  (table_name, batch, types_num, total_num, Test_Time, deletes, batch_path)
+            InsertDB().insert_all_data(sql)
+            dic = {
+                "message": "操作成功",
+                "result_code": "0000",
                 "datalist": [],
             }
             return json.dumps(dic)

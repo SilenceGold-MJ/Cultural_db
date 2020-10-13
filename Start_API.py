@@ -182,7 +182,7 @@ def SampleBatch():
             }
 
             data = CulturalAPI().SampleBatch(dic)
-            logger.info("'/SampleBatch',methods=['post']：%s；%s" % (str(dic), str(data)))
+            logger.info("'/SampleBatch',methods=['post']：入参: %s；出参：%s" % (str(dic), str(data)))
             return data
         except Exception as e:
             data = json.dumps({"result_code": 4000, "message": "样本路径不准确，请重新输入（%s）。" % e})
