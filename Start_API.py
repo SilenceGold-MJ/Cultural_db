@@ -266,6 +266,28 @@ def del_summary_data():#删除一行数据
         logger.info("'/del_summary_data',methods=['post']：" + str(data))
         return data
 
+@server.route('/login_ajax_check', methods=['post'])  # 入参为json
+def login_ajax_check():
+    params = flask.request.json  # 当客户端没有传json类型或者没传时候，直接get就会报错。
+    # params = flask.request.json #入参是字典时候用这个。
+    if params:
+        dic = {
+            "username": params.get("username"),
+            "password": params.get("password"),
+        }
+        #dic_data = {"username": username, 'password': password}
+        logger.info(dic)
+        logger.info("'/login_ajax_check',methods=['post']：%s；" % (str(dic)))
+        #data = CulturalAPI().del_summary_data(dic["table_name"],dic['Test_Version'],dic['Test_Batch'])
+        data = CulturalAPI().login_ajax_check(dic)
+        logger.info("'/login_ajax_check',methods=['post']：%s" % ( str(dic)))
+        return data
+    else:
+        data = json.dumps({"result_code": 3002, "msg": "入参必须为json类型。"})
+        logger.info("'/login_ajax_check',methods=['post']：" + str(data))
+        return data
+
+
 
 if __name__ == '__main__':
     server.run(debug=True, port=8408, host='0.0.0.0')  # 指定端口、host,0.0.0.0代表不管几个网卡，任何ip都可以访问

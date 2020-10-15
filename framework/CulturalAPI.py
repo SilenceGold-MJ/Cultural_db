@@ -116,11 +116,14 @@ class CulturalAPI():
         test_version, test_batch, Code,Test_Chart=list(dicdata.values())
         sql_all = "select * from  %s WHERE test_version='%s' AND test_batch='%s' AND Code=%s AND Test_Chart='%s';" % ( table_name, test_version, test_batch,Code,Test_Chart)
         list_all = Query_DB().query_db_all(sql_all)
+        sql_attribute ="select * from  culturaldata WHERE code=%s;"%(Code)
+        attribute=Query_DB().query_db_all(sql_attribute)#属性
         dic = {
                 "message": "操作成功",
                 "result_code": "0000",
                 "counts": len(list_all),
                 "datalist":list_all ,
+                'attribute':attribute
             }
         return json.dumps(dic)
 
@@ -315,3 +318,36 @@ class CulturalAPI():
                 "datalist":list_all ,
             }
         return json.dumps(dic)
+
+    def login_ajax_check(self,dic):
+        logger.info(dic)
+        sql_all = "select * from  users WHERE user_name='%s' and pwd='%s';"%(dic['username'],dic['password'])
+        list_all = Query_DB().query_db_all(sql_all)
+        if len(list_all)==0:
+            dic = {
+                "message": "账户或密码错误",
+                "result_code": "0001",
+                "counts": len(list_all),
+                "datalist": list_all,
+            }
+            return json.dumps(dic)
+        elif len(list_all) == 1:
+            dic = {
+                "message": "登录成功",
+                "result_code": "0000",
+                "counts": len(list_all),
+                "datalist": list_all,
+            }
+            return json.dumps(dic)
+
+        else:
+            dic = {
+                "message": "未知错误",
+                "result_code": "4000",
+                "counts": len(list_all),
+                "datalist": list_all,
+            }
+            return json.dumps(dic)
+
+
+
